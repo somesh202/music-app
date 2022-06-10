@@ -231,6 +231,7 @@ export default {
       this.reg_alert_variant = 'bg-green-400';
       this.reg_alert_msg = 'Your account has been created..';
       console.log(userData);
+      window.location.reload();
     },
   },
 };
