@@ -99,11 +99,29 @@
 
 <script>
 import MusicUpload from '@/components/Upload.vue';
+import { songsCollection, auth } from '@/includes/firebase';
 
 export default {
   name: 'manage',
   components: {
     MusicUpload,
+  },
+  data() {
+    return {
+      songs: [],
+    };
+  },
+  async created() {
+    const snapshot = await songsCollection.where('id', '==', auth.currentUser.uid).get();
+
+    snapshot.forEach((document) => {
+      const song = {
+        ...document.data(),
+        docID: document.id,
+      };
+
+      this.songs.push(song);
+    });
   },
   // beforeRouteLeave(to, from, next) {
   //   this.$refs.upload.cancelUploads();
