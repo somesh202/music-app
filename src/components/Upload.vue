@@ -105,5 +105,10 @@ export default {
       console.log(files);
     },
   },
+  beforeUnmount() {
+    this.uploads.forEach((upload) => {
+      upload.uploadTask.cancel();
+    });
+  },
 };
 </script>
