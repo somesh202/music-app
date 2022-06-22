@@ -35,3 +35,75 @@
         </div>
 </template>
 
+<script>
+import { storageDb, auth, songsCollection } from '@/includes/firebase';
+
+export default {
+  name: 'upload',
+  data() {
+    return {
+      is_dragover: false,
+      uploads: [],
+    };
+  },
+  methods: {
+    file_upload($event) {
+      this.is_dragover = false;
+      // console.log($event);
+      let files;
+
+      if ($event.dataTransfer) {
+        files = [...$event.dataTransfer.files];
+      } else {
+        files = [...$event.target.files];
+      }
+
+      files.forEach((file) => {
+        if (file.type !== 'audio/mpeg') {
+          return;
+        }
+
+        const storageRef = storageDb.ref();
+        const songsRef = storageRef.child(`songs/${file.name}`);
+        const uploadTask = songsRef.put(file);
+        const uploadIdx = this.uploads.push({
+          uploadTask,
+          current_progress: 0,
+          name: file.name,
+          variant: 'bg-purple-400',
+          icon: 'fas fa-spinner fa-spin',
+          text_class: '',
+        }) - 1;
+
+        uploadTask.on('state_changed', (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          this.uploads[uploadIdx].current_progress = progress;
+        }, (err) => {
+          this.uploads[uploadIdx].variant = 'bg-red-400';
+          this.uploads[uploadIdx].icon = 'fas fa-times';
+          this.uploads[uploadIdx].text_class = 'text-red-400';
+          console.log(err);
+        }, async () => {
+          const song = {
+            id: auth.currentUser.uid,
+            display_name: auth.currentUser.displayName,
+            orginal_name: uploadTask.snapshot.ref.name,
+            modified_name: uploadTask.snapshot.ref.name,
+            genre: '',
+            comments: 0,
+          };
+
+          song.url = await uploadTask.snapshot.ref.getDownloadURL();
+          await songsCollection.add(song);
+
+          this.uploads[uploadIdx].variant = 'bg-green-400';
+          this.uploads[uploadIdx].icon = 'fas fa-check';
+          this.uploads[uploadIdx].text_class = 'text-green-400';
+          // console.log(err);
+        });
+      });
+      console.log(files);
+    },
+  },
+};
+</script>
