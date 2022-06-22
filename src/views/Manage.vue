@@ -11,8 +11,10 @@
             <i class="fa fa-compact-disc float-right text-green-400 text-2xl"></i>
           </div>
           <div class="p-6">
-            <composition-item v-for="song in songs" :key="song.docID"
-            :song="song"/>
+            <composition-item v-for="(song, idx) in songs" :key="song.docID"
+            :song="song"
+            :updateSong="updateSong"
+            :index="idx"/>
         </div>
         </div>
       </div>
@@ -47,16 +49,11 @@ export default {
       this.songs.push(song);
     });
   },
-  // beforeRouteLeave(to, from, next) {
-  //   this.$refs.upload.cancelUploads();
-  //   next();
-  // },
-  // beforeRouteEnter(to, from, next) {
-  //   if (store.state.userLoggedIn) {
-  //     next();
-  //   } else {
-  //     next({ name: 'home' });
-  //   }
-  // },
+  methods: {
+    updateSong(idx, values) {
+      this.songs[idx].modified_name = values.modified_name;
+      this.songs[idx].genre = values.genre;
+    },
+  },
 };
 </script>
