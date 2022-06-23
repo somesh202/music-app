@@ -14,7 +14,8 @@
             <composition-item v-for="(song, idx) in songs" :key="song.docID"
             :song="song"
             :updateSong="updateSong"
-            :index="idx"/>
+            :index="idx"
+            :removeSong="removeSong"/>
         </div>
         </div>
       </div>
@@ -53,6 +54,9 @@ export default {
     updateSong(idx, values) {
       this.songs[idx].modified_name = values.modified_name;
       this.songs[idx].genre = values.genre;
+    },
+    removeSong(idx) {
+      this.songs.splice(idx, 1);
     },
   },
 };
