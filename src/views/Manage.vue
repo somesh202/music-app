@@ -15,7 +15,8 @@
             :song="song"
             :updateSong="updateSong"
             :index="idx"
-            :removeSong="removeSong"/>
+            :removeSong="removeSong"
+            :updateUnsavedFlag="updateUnsavedFlag"/>
         </div>
         </div>
       </div>
@@ -36,6 +37,7 @@ export default {
   data() {
     return {
       songs: [],
+      unsavedFlag: false,
     };
   },
   async created() {
@@ -59,6 +61,19 @@ export default {
 
       this.songs.push(song);
     },
+    updateUnsavedFlag(value) {
+      this.unsavedFlag = value;
+    },
+  },
+
+  beforeRouteleave(to, from, next) {
+    if (!this.unsavedFlag) {
+      next();
+    } else {
+      // eslint-disable-next-line no-alert, no-restricted-globals
+      const leavePage = confirm('You have unsaved changes. Are you sure to leave?');
+      next(leavePage);
+    }
   },
 };
 </script>
