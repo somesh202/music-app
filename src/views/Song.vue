@@ -38,7 +38,7 @@
             placeholder="Your comment here..."></vee-field>
           <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600">Submit</button>
         </vee-form>
-        <select
+        <select v-model="sort"
           class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition
           duration-500 focus:outline-none focus:border-black rounded">
           <option value="1">Latest</option>
@@ -49,7 +49,7 @@
   </section>
     <!-- Comments -->
     <ul class="container mx-auto">
-    <li class="p-6 bg-gray-50 border border-gray-200" v-for="comment in comments"
+    <li class="p-6 bg-gray-50 border border-gray-200" v-for="comment in sortComments"
     :key="comment.docID">
       <!-- Comment Author -->
       <div class="mb-5">
@@ -82,10 +82,20 @@ export default {
       comment_alert_variant: 'bg-blue-500',
       comment_alert_message: 'Please wait! Your comment is being submitted',
       comments: [],
+      sort: '1',
     };
   },
   computed: {
     ...mapState(['userLoggedIn']),
+    sortComments() {
+      return this.comments.slice().sort((x, y) => {
+        if (this.sort === '1') {
+          return new Date(y.datePosted) - new Date(x.datePosted);
+          // converting to date object to sort by date
+        }
+        return new Date(x.datePosted) - new Date(y.datePosted);
+      }); // to return a new array and sort through it
+    },
   },
   async created() {
     const docSnapshot = await songsCollection.doc(this.$route.params.id).get();
@@ -114,6 +124,8 @@ export default {
       };
 
       await commentsCollection.add(comment);
+
+      this.getComments();
 
       this.comment_in_submission = false;
       this.comment_alert_variant = 'bg-green-500';
