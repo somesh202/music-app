@@ -46,20 +46,61 @@ export default {
   data() {
     return {
       songs: [],
+      maxPerPage: 20,
+      pendingRequests: false,
     };
   },
   components: {
     SongItem,
   },
   async created() {
-    const songArr = await songsCollection.get();
+    this.getSongs();
 
-    songArr.forEach((document) => {
-      this.songs.push({
-        docID: document.id,
-        ...document.data(),
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+  methods: {
+    handleScroll() {
+      const { scrollTop, offsetHeight } = document.documentElement;
+      const { innerHeight } = window;
+      const bottomWindow = Math.round(scrollTop) + innerHeight === offsetHeight;
+
+      if (bottomWindow) {
+        this.getSongs();
+      }
+    },
+    async getSongs() {
+      if (this.pendingRequests) {
+        return;
+      }
+      this.pendingRequests = true;
+
+      let songArr;
+      if (this.songs.length) {
+        const lastSong = await songsCollection.doc(this.songs[this.songs.length - 1].docID).get();
+        songArr = await songsCollection
+          .orderBy('modified_name')
+          .startAfter(lastSong)
+          .limit(this.maxPerPage)
+          .get();
+      } else {
+        songArr = await songsCollection
+          .orderBy('modified_name')
+          .limit(this.maxPerPage)
+          .get();
+      }
+
+      songArr.forEach((document) => {
+        this.songs.push({
+          docID: document.id,
+          ...document.data(),
+        });
       });
-    });
+
+      this.pendingRequests = false;
+    },
   },
 };
 </script>
