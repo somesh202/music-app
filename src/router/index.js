@@ -1,8 +1,9 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import About from '@/views/About.vue';
 import Manage from '@/views/Manage.vue';
 import store from '@/store';
+import Song from '@/views/Song.vue';
 
 const routes = [
   {
@@ -32,13 +33,18 @@ const routes = [
     redirect: { name: 'manage' },
   },
   {
+    name: 'song',
+    path: '/song/:id',
+    component: Song,
+  },
+  {
     path: '/:catchAll(.*)*',
     redirect: { name: 'home' },
   },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
   linkExactActiveClass: 'text-orange-500',
 });
