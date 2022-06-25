@@ -11,6 +11,7 @@ export default createStore({
     audio: {},
     seek: '00:00',
     duration: '00:00',
+    barProgress: '0%',
   },
   mutations: {
     toggleAuthModal: (state) => {
@@ -29,6 +30,7 @@ export default createStore({
     updatePosition(state) {
       state.seek = util.formatTime(state.audio.seek());
       state.duration = util.formatTime(state.audio.duration());
+      state.barProgress = `${(state.audio.seek() / state.audio.duration()) * 100}%`;
     },
   },
   getters: {
@@ -73,6 +75,10 @@ export default createStore({
       commit('toggleAuth');
     },
     async newSong({ commit, state, dispatch }, payload) {
+      if (state.audio instanceof Howl) {
+        state.audio.unload();
+      }
+
       commit('newSong', payload);
 
       state.audio.play();
