@@ -22,7 +22,8 @@
             (Uploaded by) {{ currentSong.display_name }}
           </span>
         </div>
-        <span class="block w-full h-2 rounded m-1 mt-2 bg-gray-200 relative cursor-pointer">
+        <span class="block w-full h-2 rounded m-1 mt-2 bg-gray-200 relative cursor-pointer"
+        @click.prevent="updateSeek">
           <span class="absolute top-neg-8 text-gray-800 text-lg" :style="{ left: barProgress }">
             <i class="fas fa-circle"></i>
           </span>
@@ -49,7 +50,7 @@ export default {
     ...mapState(['seek', 'duration', 'barProgress', 'currentSong']),
   },
   methods: {
-    ...mapActions(['toggleAudio']),
+    ...mapActions(['toggleAudio', 'updateSeek']),
   },
 };
 </script>

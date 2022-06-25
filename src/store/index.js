@@ -17,7 +17,7 @@ export default createStore({
     toggleAuthModal: (state) => {
       state.authModalShow = !state.authModalShow;
     },
-    toggleAuth: (state) => {
+    toggleAuth(state) {
       state.userLoggedIn = !state.userLoggedIn;
     },
     newSong(state, payload) {
@@ -34,10 +34,12 @@ export default createStore({
     },
   },
   getters: {
+    // authModalShow: (state) => state.authModalShow,
     playing: (state) => {
       if (state.audio.playing) {
         return state.audio.playing();
       }
+
       return false;
     },
   },
@@ -46,6 +48,7 @@ export default createStore({
       const userCred = await auth.createUserWithEmailAndPassword(
         payload.email, payload.password,
       );
+
       await usersCollection.doc(userCred.user.uid).set({
         name: payload.name,
         email: payload.email,
@@ -56,15 +59,17 @@ export default createStore({
       await userCred.user.updateProfile({
         displayName: payload.name,
       });
+
       commit('toggleAuth');
     },
     async login({ commit }, payload) {
-      auth.signInWithEmailAndPassword(payload.email, payload.password);
+      await auth.signInWithEmailAndPassword(payload.email, payload.password);
 
       commit('toggleAuth');
     },
     init_login({ commit }) {
       const user = auth.currentUser;
+
       if (user) {
         commit('toggleAuth');
       }
@@ -73,8 +78,17 @@ export default createStore({
       await auth.signOut();
 
       commit('toggleAuth');
+
+      // if (payload.route.meta.requiresAuth) {
+      //   payload.router.push({ name: 'home' });
+      // }
     },
     async newSong({ commit, state, dispatch }, payload) {
+      if (state.currentSong === payload) {
+        dispatch('toggleAudio');
+        return;
+      }
+      console.log(payload);
       if (state.audio instanceof Howl) {
         state.audio.unload();
       }
@@ -102,11 +116,28 @@ export default createStore({
     },
     progress({ commit, state, dispatch }) {
       commit('updatePosition');
+
       if (state.audio.playing()) {
         requestAnimationFrame(() => {
           dispatch('progress');
         });
       }
+    },
+    updateSeek({ state, dispatch }, payload) {
+      if (!state.audio.playing) {
+        return;
+      }
+
+      const { x, width } = payload.currentTarget.getBoundingClientRect();
+      const clickX = payload.clientX - x;
+      const percentage = clickX / width;
+      const seconds = state.audio.duration() * percentage;
+
+      state.audio.seek(seconds);
+
+      state.audio.once('seek', () => {
+        dispatch('progress');
+      });
     },
   },
 });
