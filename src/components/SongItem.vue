@@ -12,7 +12,7 @@
           <div class="text-gray-600 text-lg">
             <span class="comments">
               <i class="fa fa-comments text-gray-600"></i>
-              {{ song.comments }}
+              {{ song.comment_count }}
             </span>
           </div>
         </li>

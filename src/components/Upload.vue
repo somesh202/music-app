@@ -91,7 +91,7 @@ export default {
             orginal_name: uploadTask.snapshot.ref.name,
             modified_name: uploadTask.snapshot.ref.name,
             genre: '',
-            comments: 0,
+            comment_count: 0,
           };
 
           song.url = await uploadTask.snapshot.ref.getDownloadURL();
