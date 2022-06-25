@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import { auth, usersCollection } from '@/includes/firebase';
 import { Howl } from 'howler';
+import util from '@/includes/util';
 
 export default createStore({
   state: {
@@ -8,6 +9,8 @@ export default createStore({
     userLoggedIn: false,
     currentSong: {},
     audio: {},
+    seek: '00:00',
+    duration: '00:00',
   },
   mutations: {
     toggleAuthModal: (state) => {
@@ -23,9 +26,18 @@ export default createStore({
         html5: true,
       });
     },
+    updatePosition(state) {
+      state.seek = util.formatTime(state.audio.seek());
+      state.duration = util.formatTime(state.audio.duration());
+    },
   },
   getters: {
-    // authModalShow: (state) => state.authModalShow,
+    playing: (state) => {
+      if (state.audio.playing) {
+        return state.audio.playing();
+      }
+      return false;
+    },
   },
   actions: {
     async register({ commit }, payload) {
@@ -60,10 +72,35 @@ export default createStore({
 
       commit('toggleAuth');
     },
-    async newSong({ commit, state }, payload) {
+    async newSong({ commit, state, dispatch }, payload) {
       commit('newSong', payload);
 
       state.audio.play();
+
+      state.audio.on('play', () => {
+        requestAnimationFrame(() => {
+          dispatch('progress');
+        });
+      });
+    },
+    async toggleAudio({ state }) {
+      if (!state.audio.playing) {
+        return;
+      }
+
+      if (state.audio.playing()) {
+        state.audio.pause();
+      } else {
+        state.audio.play();
+      }
+    },
+    progress({ commit, state, dispatch }) {
+      commit('updatePosition');
+      if (state.audio.playing()) {
+        requestAnimationFrame(() => {
+          dispatch('progress');
+        });
+      }
     },
   },
 });
