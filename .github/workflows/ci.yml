@@ -23,9 +23,15 @@ jobs:
     - name: yarn install
       run: |
         yarn install
-    - name: yarn test
+    - name: yarn lint
       run: |
-        yarn test 
+        yarn lint
+    - name: Unit Testing
+      run: |
+        yarn test:unit
+    - name: End-to-end testing
+      run: |
+        yarn test:e2e  
       env:
         CI: true
       
