@@ -64,6 +64,18 @@ export default {
           return;
         }
 
+        if (!navigator.online) {
+          this.uploads.push({
+            uploadTask: {},
+            current_progress: 100,
+            name: file.name,
+            variant: 'bg-red-400',
+            text_class: 'text-red-400',
+            icon: 'fas fa-times',
+          });
+          return;
+        }
+
         const storageRef = storageDb.ref();
         const songsRef = storageRef.child(`songs/${file.name}`);
         const uploadTask = songsRef.put(file);
@@ -92,6 +104,7 @@ export default {
             modified_name: uploadTask.snapshot.ref.name,
             genre: '',
             comment_count: 0,
+            likes: 0,
           };
 
           song.url = await uploadTask.snapshot.ref.getDownloadURL();
