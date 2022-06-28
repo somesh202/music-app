@@ -1,7 +1,7 @@
 <template>
     <main>
   <section class="mb-8 py-20 text-white text-center relative">
-    <div class="absolute inset-0 w-full h-full bg-contain introduction-bg"
+    <div class="absolute md:bg-cover lg:bg-contain inset-0 w-full h-full introduction-bg"
       style="background-image: url(assets/img/header.png)"></div>
     <div class="container mx-auto">
       <div class="text-white main-header-content">
@@ -23,7 +23,7 @@
   <!-- Main Content -->
   <section class="container mx-auto">
     <div class="bg-white rounded border border-gray-200 relative flex flex-col">
-      <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
+      <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200" v-icon="'headphones-alt'">
         <span class="card-title">Songs</span>
         <i class="fa fa-headphones-alt float-right text-green-400 text-2xl"></i>
       </div>
