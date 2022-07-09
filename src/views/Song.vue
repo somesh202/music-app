@@ -2,8 +2,7 @@
   <main>
     <!-- Music Header -->
     <section class="w-full mb-8 py-14 text-center text-white relative">
-      <div class="absolute md:bg-cover lg:bg-contain
-       inset-0 w-full h-full box-border bg-contain music-bg"
+      <div class="absolute bg-cover lg:bg-contain inset-0 w-full h-full box-border music-bg"
         style="background-image: url(/assets/img/song-header.png)">
       </div>
       <div class="container mx-auto flex items-center">
