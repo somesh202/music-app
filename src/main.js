@@ -9,6 +9,10 @@ import './assets/tailwind.css';
 import './assets/main.css';
 import './registerServiceWorker';
 import GlobalComponents from './includes/_globals';
+import ProgressBar from './includes/progress-bar';
+import 'nprogress/nprogress.css';
+
+ProgressBar(router);
 
 let app;
 
